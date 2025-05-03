@@ -1,8 +1,10 @@
-/__pycache__
-/__pycache__/
-/.pytest_cache
-/.idea
-/.vscode
-/.mypy_cache
+# Python cache
+__pycache__/
+*.py[cod]
 
+# IDE/editor settings
+.idea/
+.vscode/
 
+# Optional: macOS metadata
+.DS_Store
