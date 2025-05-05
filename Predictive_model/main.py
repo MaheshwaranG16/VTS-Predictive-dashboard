@@ -15,4 +15,4 @@ def remove_session(exception=None):
 app.register_blueprint(routes.routes)
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='13.127.253.154', port=5000)
