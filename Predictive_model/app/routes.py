@@ -11,7 +11,6 @@ from services.driver_behavior import get_driver_risk_profile_by_id
 from services.fleet_utilization import get_tracking_heatmap_data
 from services.predictive_maintenance.forecast_next_replacement import forecast_all_next_replacements
 from services.vehicle_health_monitor.vehicle_health import get_vehicle_health_json
-from services.vehicle_health_monitor.anomaly_chart import generate_anomaly_chart
 
 
 routes = Blueprint("routes", __name__)
@@ -121,14 +120,6 @@ def get_vehicle_health_status():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-"""
-@routes.route('/anomaly-chart', methods=['GET'])    
-def get_anomaly_chart():
-    fig = generate_anomaly_chart()
-    return jsonify(fig.to_json()) 
-"""
-
-
 @routes.route('/failure-analysis', methods=['GET'])
 def failure_analysis():
     try:
@@ -169,46 +160,6 @@ def failure_analysis():
                 "predictions": predictions,
                 "silhouette_score": silhouette_avg
             }), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    
-
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from flask import request
-
-@routes.route('/send-failure-report', methods=['POST'])
-def send_failure_report():
-    try:
-        session = db_session()
-        df, _ = load_failure_data(session)
-        if df.empty:
-            return jsonify({"error": "No failure data available."}), 404
-
-        # Compose email body from dataframe summary
-        email_body = df[['vehicle_number', 'reason']].groupby('vehicle_number')['reason'].apply(lambda x: ', '.join(set(x))).to_string()
-
-        # Email setup
-        sender_email = "aruneshnagarajan4@gmail.com"
-        receiver_email = "aruneshnagarajan25@gmail.com"
-        subject = "Vehicle Failure Analysis Report"
-
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = receiver_email
-        msg['Subject'] = subject
-
-        msg.attach(MIMEText(email_body, 'plain'))
-
-        # Send using SMTP (e.g., Gmail SMTP or any SMTP server)
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()
-            server.login(sender_email, 'Arunesh@123')  # Use app password if using Gmail
-            server.send_message(msg)
-
-        return jsonify({"message": "Mail sent successfully."}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
